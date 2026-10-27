@@ -99,16 +99,22 @@ export const AuthProvider = ({ children }) => {
   const exploreDemo = async () => {
     try {
       setLoading(true);
+      // Clear any prior stale session tokens or IDs
+      localStorage.removeItem('taskflow_token');
+      localStorage.removeItem('taskflow_active_workspace_id');
+
       const { data } = await api.post('/auth/demo');
-      if (data.success) {
+      if (data.success && data.token) {
         localStorage.setItem('taskflow_token', data.token);
         setUser(data.user);
         await fetchWorkspaces();
         toast.success('Logged in as Demo Product Lead. Explore all features freely!');
         return { success: true };
       }
+      throw new Error(data.message || 'Failed to authenticate demo user');
     } catch (error) {
-      const msg = error.userMessage || 'Demo mode failed to initialize.';
+      console.error('Demo launch error:', error);
+      const msg = error.userMessage || error.message || 'Demo mode failed to initialize.';
       toast.error(msg);
       return { success: false, message: msg };
     } finally {
