@@ -1,4 +1,7 @@
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -6,6 +9,10 @@ import morgan from 'morgan';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.resolve(__dirname, '../../dist');
 
 // Route Imports
 import authRoutes from './routes/authRoutes.js';
@@ -92,7 +99,18 @@ export const createApp = () => {
   app.use('/api/reports', reportRoutes);
   app.use('/api/activity', activityRoutes);
 
-  // 404 Route Handler
+  // Static frontend production assets (when built)
+  if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+    app.get('*', (req, res, next) => {
+      if (req.originalUrl.startsWith('/api')) {
+        return next();
+      }
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
+  }
+
+  // 404 Route Handler for unmatched API endpoints
   app.use('*', (req, res) => {
     res.status(404).json({
       success: false,

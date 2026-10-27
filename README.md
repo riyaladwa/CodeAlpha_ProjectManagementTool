@@ -100,36 +100,36 @@ Inspired by high-velocity platforms like Linear, Notion, and Jira, TaskFlow AI b
 ## 📁 Repository Structure
 
 ```
-project-management-tool/
-├── client/                     # Frontend Application (React + Vite)
+TaskFlow-AI/
+├── index.html                  # Root HTML entrypoint for React
+├── vite.config.js              # Vite bundling & dev server config
+├── tailwind.config.js          # Tailwind CSS design system tokens
+├── postcss.config.js           # PostCSS configuration
+├── package.json                # Single unified full-stack package manifest
+├── public/                     # Public static assets (logos, icons, favicons)
+├── src/                        # Full-Stack Frontend Client Application
+│   ├── components/             # Reusable UI (TaskModal, Badge, LoadingSkeleton, etc.)
+│   ├── context/                # AuthContext & ToastContext (global session & alerts)
+│   ├── layouts/                # MainLayout, AuthLayout, PublicLayout
+│   ├── pages/                  # 12 Views (Kanban, Dashboard, AIAssistant, Analytics, etc.)
+│   ├── services/               # Axios API client with automatic token & workspace interceptors
+│   ├── utils/                  # Helper utilities, confetti triggers, date formatters
+│   ├── App.jsx                 # Client routing engine & protected route guards
+│   ├── main.jsx                # React DOM root render
+│   └── index.css               # Tailwind design tokens & micro-animations
+├── server/                     # Full-Stack Backend API & Business Logic
 │   ├── src/
-│   │   ├── components/         # Reusable UI (TaskModal, Badge, LoadingSkeleton, etc.)
-│   │   ├── context/            # AuthContext & ToastContext
-│   │   ├── layouts/            # MainLayout, AuthLayout, PublicLayout
-│   │   ├── pages/              # 12 Pages (Kanban, Dashboard, AIAssistant, Analytics, etc.)
-│   │   ├── services/           # Axios HTTP client with request/response interceptors
-│   │   ├── utils/              # Helper functions, confetti, date formatters
-│   │   ├── App.jsx             # Router definition & route guards
-│   │   ├── main.jsx            # React root mount
-│   │   └── index.css           # Tailwind custom styles
-│   ├── .env.example            # Client environment variable template
-│   ├── package.json
-│   └── vite.config.js
-├── server/                     # Backend REST API (Node.js + Express)
-│   ├── src/
-│   │   ├── config/             # MongoDB connection & environment loader
+│   │   ├── config/             # MongoDB connection (with in-memory fallback) & env config
 │   │   ├── controllers/        # Auth, Workspace, Project, Task, AI, Analytics controllers
-│   │   ├── middleware/         # Auth verification, RBAC, Rate limiter, Error handler
-│   │   ├── models/             # Mongoose Models (User, Workspace, Project, Task, Comment, etc.)
-│   │   ├── routes/             # Express API routes
+│   │   ├── middleware/         # JWT verification, RBAC, Rate limiter, Error handler
+│   │   ├── models/             # 8 Mongoose Schemas (User, Workspace, Project, Task, etc.)
+│   │   ├── routes/             # Express API route endpoints
 │   │   ├── services/           # Gemini AI service, Notification service, Demo seeder
-│   │   ├── utils/              # Database seed scripts
-│   │   ├── app.js              # Express app setup and middleware pipeline
+│   │   ├── utils/              # Standalone DB seed scripts
+│   │   ├── app.js              # Express app middleware & static client serving
 │   │   └── server.js           # Server bootstrap and port listener
-│   ├── tests/                  # Automated integration tests (node:test + supertest)
-│   ├── .env.example            # Server environment variable template
-│   └── package.json
-├── package.json                # Root orchestration (concurrent scripts)
+│   └── tests/                  # Automated integration tests (node:test + supertest)
+├── .env.example                # Unified environment variable template
 ├── .gitignore                  # Git exclusions for secrets, builds, and node_modules
 └── README.md                   # Project documentation
 ```
@@ -145,37 +145,33 @@ project-management-tool/
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/riyaladwa/TaskFlow-AI.git
-cd TaskFlow-AI
+git clone https://github.com/riyaladwa/CodeAlpha_ProjectManagementTool.git
+cd CodeAlpha_ProjectManagementTool
 ```
 
-### 3. Install Dependencies
+### 3. Install All Dependencies (Single Command)
 ```bash
-# Install root, server, and client dependencies
 npm install
-npm install --prefix server
-npm install --prefix client
 ```
 
 ### 4. Configure Environment Variables
-
-**Backend (`server/.env`):**
+Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+Default `.env` configuration:
 ```env
 PORT=5001
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
+VITE_API_URL=http://localhost:5001/api
 MONGODB_URI=mongodb://localhost:27017/taskflow_ai
 JWT_SECRET=taskflow_ai_development_jwt_secret_key_super_secure_2026
 JWT_EXPIRES_IN=7d
-GEMINI_API_KEY=your_google_gemini_api_key_here
+GEMINI_API_KEY=
 GEMINI_MODEL=gemini-1.5-flash
 ```
-*(Note: If local MongoDB is not running, the server automatically starts an in-memory MongoDB instance for zero-friction setup).*
-
-**Frontend (`client/.env`):**
-```env
-VITE_API_URL=http://localhost:5001/api
-```
+*(Note: If local MongoDB is not running, the application automatically boots an in-memory MongoDB instance for zero-friction evaluation).*
 
 ### 5. Run Automated Test Suite
 Verify that all 14 backend integration tests pass:
